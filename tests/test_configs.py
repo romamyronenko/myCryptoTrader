@@ -17,6 +17,8 @@ def test_configs_are_valid_json(name: str) -> None:
     assert payload["exchange"]["name"] in {"binance", "bybit"}
     assert payload["timeframe"] == "1h"
     assert payload["pairlists"][0]["method"] == "StaticPairList"
+    # Freqtrade 2026.10 rejects protections in config; they live on the strategy.
+    assert "protections" not in payload
 
 
 def test_dryrun_config_is_safe() -> None:

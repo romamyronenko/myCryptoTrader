@@ -42,6 +42,10 @@ def test_strategy_wrapper_delegates_to_shared_signals(
 
     enriched = strategy.populate_indicators(ohlcv, {})
 
+    assert {protection["method"] for protection in strategy.protections} == {
+        "StoplossGuard",
+        "MaxDrawdown",
+    }
     assert set(enriched["enter_long"].unique()) <= {0, 1}
     assert set(enriched["exit_long"].unique()) <= {0, 1}
     assert int(enriched["enter_long"].sum()) > 0

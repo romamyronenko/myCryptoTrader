@@ -64,22 +64,6 @@
     "token": "${TELEGRAM_TOKEN}",
     "chat_id": "${TELEGRAM_CHAT_ID}"
   },
-  "protections": [
-    {
-      "method": "StoplossGuard",
-      "lookback_period_candles": 24,
-      "trade_limit": 2,
-      "stop_duration_candles": 12,
-      "only_per_pair": false
-    },
-    {
-      "method": "MaxDrawdown",
-      "lookback_period_candles": 200,
-      "trade_limit": 10,
-      "stop_duration_candles": 24,
-      "max_allowed_drawdown": 0.1
-    }
-  ],
   "internals": {
     "process_throttle_secs": 5
   }

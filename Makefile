@@ -78,7 +78,7 @@ download: ## Freqtrade: завантажити свічки для бектес�
 	$(FREQTRADE_RUN) download-data --config $(FREQTRADE_CONFIG) --timeframes $(TIMEFRAME) --timerange $(TIMERANGE)
 
 backtest-ft: ## Freqtrade-бектест у Docker
-	$(FREQTRADE_RUN) backtesting --config $(FREQTRADE_CONFIG) --strategy $(STRATEGY) --strategy-path $(STRATEGY_PATH) --timerange $(TIMERANGE)
+	$(FREQTRADE_RUN) backtesting --config $(FREQTRADE_CONFIG) --strategy $(STRATEGY) --strategy-path $(STRATEGY_PATH) --timerange $(TIMERANGE) --enable-protections
 
 dryrun: ## Підняти dry-run бота
 	$(COMPOSE) up -d trading

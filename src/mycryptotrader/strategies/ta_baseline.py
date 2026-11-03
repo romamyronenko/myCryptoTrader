@@ -13,6 +13,7 @@ import pandas as pd
 from freqtrade.strategy import IStrategy
 
 from mycryptotrader.signals.ta_baseline import TaBaselineParams, add_signals
+from mycryptotrader.strategies._protections import default_protections
 
 
 class TaBaseline(IStrategy):
@@ -28,6 +29,10 @@ class TaBaseline(IStrategy):
     trailing_stop = False
     process_only_new_candles = True
     use_exit_signal = True
+
+    @property
+    def protections(self) -> list[dict[str, Any]]:
+        return default_protections()
 
     def populate_indicators(
         self, dataframe: pd.DataFrame, metadata: dict[str, Any]
