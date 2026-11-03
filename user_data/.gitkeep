@@ -1,0 +1,2 @@
+# Freqtrade runtime data (databases, downloaded candles, backtest results).
+# Everything here except .gitkeep is git-ignored.
