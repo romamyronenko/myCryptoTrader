@@ -81,6 +81,28 @@ data/raw/exchange=binance/symbol=BTC_USDT/timeframe=1h/year=2024/month=01/part.p
 Для великої історії швидше брати офіційні дампи (наприклад `data.binance.vision`) і
 завантажувати їх через `write_ohlcv`, ніж тягнути все через ccxt.
 
+## Стратегії
+
+| Назва | Логіка | Чистий код | Freqtrade-обгортка |
+|---|---|---|---|
+| `TaBaseline` | EMA 20/50 cross + RSI-фільтр | `signals/ta_baseline.py` | `strategies/ta_baseline.py` |
+| `RsiReversion` | RSI виходить з oversold + фільтр EMA200 | `signals/rsi_reversion.py` | `strategies/rsi_reversion.py` |
+
+Обидві стратегії зареєстровані в `signals/registry.py`. Вибір — через `STRATEGY`:
+
+```bash
+make backtest    STRATEGY=RsiReversion
+make backtest-ft STRATEGY=RsiReversion
+make dryrun      STRATEGY=RsiReversion
+```
+
+Або задай `STRATEGY=RsiReversion` у `.env` — тоді контейнер підхопить його автоматично.
+
+Щоб додати нову стратегію: чиста функція `add_signals(df) -> df` у `signals/`, обгортка
+`IStrategy` у `strategies/`, один рядок у `registry.py`, тести на бінарність і causality.
+
+Покроковий серверний сценарій — у [docs/server-runbook.md](docs/server-runbook.md).
+
 ## Freqtrade
 
 Конфіги лежать у `config/freqtrade/`:

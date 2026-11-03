@@ -39,7 +39,7 @@ services:
       - --config
       - /freqtrade/config/config.dryrun.json
       - --strategy
-      - TaBaseline
+      - ${STRATEGY:-TaBaseline}
       - --strategy-path
       - /opt/mycryptotrader/src/mycryptotrader/strategies
     ports:
@@ -54,7 +54,7 @@ services:
       - --config
       - /freqtrade/config/config.live.json
       - --strategy
-      - TaBaseline
+      - ${STRATEGY:-TaBaseline}
       - --strategy-path
       - /opt/mycryptotrader/src/mycryptotrader/strategies
     ports:

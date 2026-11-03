@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from mycryptotrader.cli import main
@@ -19,6 +20,33 @@ def test_demo_then_backtest(tmp_path: Path) -> None:
     assert (run_dir / "equity.parquet").exists()
     assert (run_dir / "trades.parquet").exists()
     assert (run_dir / "run.json").exists()
+
+    manifest = json.loads((run_dir / "run.json").read_text(encoding="utf-8"))
+    assert manifest["strategy"] == "TaBaseline"
+
+
+def test_backtest_can_select_another_strategy(tmp_path: Path) -> None:
+    data_dir = tmp_path / "data"
+    run_dir = tmp_path / "run-rsi"
+
+    assert main(["--data-dir", str(data_dir), "data", "demo", "--days", "120"]) == 0
+    assert (
+        main(
+            [
+                "--data-dir",
+                str(data_dir),
+                "backtest",
+                "--strategy",
+                "RsiReversion",
+                "--out",
+                str(run_dir),
+            ]
+        )
+        == 0
+    )
+
+    manifest = json.loads((run_dir / "run.json").read_text(encoding="utf-8"))
+    assert manifest["strategy"] == "RsiReversion"
 
 
 def test_duckdb_sees_the_store(tmp_path: Path) -> None:

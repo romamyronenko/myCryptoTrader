@@ -21,7 +21,7 @@ from mycryptotrader.data.store import list_datasets, read_ohlcv, write_ohlcv
 from mycryptotrader.data.synthetic import make_ohlcv
 from mycryptotrader.data.validate import validate_ohlcv
 from mycryptotrader.research.backtest import BacktestConfig, BacktestResult, run_backtest
-from mycryptotrader.signals.ta_baseline import add_signals
+from mycryptotrader.signals.registry import SIGNAL_BUILDERS, get_signal_builder
 
 
 def _add_dataset_args(parser: argparse.ArgumentParser) -> None:
@@ -66,8 +66,14 @@ def build_parser() -> argparse.ArgumentParser:
     sql.add_argument("query", help="SELECT statement; the view is called ohlcv")
     sql.set_defaults(handler=_cmd_data_sql)
 
-    backtest = subparsers.add_parser("backtest", help="run the EMA-cross baseline")
+    backtest = subparsers.add_parser("backtest", help="run a research backtest")
     _add_dataset_args(backtest)
+    backtest.add_argument(
+        "--strategy",
+        default="TaBaseline",
+        choices=sorted(SIGNAL_BUILDERS),
+        help="signal builder to evaluate",
+    )
     backtest.add_argument("--fee", type=float, default=None, help="per-side fee, e.g. 0.001")
     backtest.add_argument("--capital", type=float, default=None)
     backtest.add_argument("--out", type=Path, default=None, help="artifact directory")
@@ -192,6 +198,7 @@ def _data_fingerprint(frame: pd.DataFrame) -> str:
 
 
 def _print_backtest(
+    strategy: str,
     exchange: str,
     symbol: str,
     timeframe: str,
@@ -200,7 +207,7 @@ def _print_backtest(
     out_dir: Path,
 ) -> None:
     metrics = result.metrics
-    print(f"\nBacktest {symbol} {timeframe} on {exchange}")
+    print(f"\nBacktest {strategy} | {symbol} {timeframe} on {exchange}")
     print(f"  bars            : {len(frame)}")
     print(f"  total return    : {metrics['total_return']:+.2%}")
     print(f"  CAGR            : {metrics['cagr']:+.2%}")
@@ -232,7 +239,7 @@ def _cmd_backtest(args: argparse.Namespace, settings: Settings) -> int:
         print("Refusing to backtest invalid data. Fix gaps/duplicates first.", file=sys.stderr)
         return 2
 
-    signals = add_signals(frame)
+    signals = get_signal_builder(args.strategy)(frame)
     fee = args.fee if args.fee is not None else settings.fee
     capital = args.capital if args.capital is not None else settings.initial_capital
     config = BacktestConfig(
@@ -263,13 +270,13 @@ def _cmd_backtest(args: argparse.Namespace, settings: Settings) -> int:
         "data_fingerprint": _data_fingerprint(frame),
         "fee": fee,
         "initial_capital": capital,
-        "strategy": "ta_baseline",
+        "strategy": args.strategy,
     }
     (out_dir / "run.json").write_text(
         json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8"
     )
 
-    _print_backtest(exchange, symbol, timeframe, frame, result, out_dir)
+    _print_backtest(args.strategy, exchange, symbol, timeframe, frame, result, out_dir)
     return 0
 
 

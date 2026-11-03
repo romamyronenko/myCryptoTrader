@@ -1,10 +1,14 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
 
+# Pick up STRATEGY/TIMEFRAME/exchange overrides from .env when present.
+-include .env
+
 EXCHANGE ?= binance
 SYMBOL ?= BTC/USDT
 TIMEFRAME ?= 1h
 STRATEGY ?= TaBaseline
+export STRATEGY
 TIMERANGE ?= 20240101-20240630
 SINCE ?= 2023-01-01
 UNTIL ?= 2024-01-01
@@ -68,7 +72,7 @@ data-sql: ## SQL через DuckDB: make data-sql SQL="select ..."
 	uv run mycryptotrader --data-dir $(DATA_DIR) data sql "$(SQL)"
 
 backtest: ## Research-бектест + артефакти
-	uv run mycryptotrader --data-dir $(DATA_DIR) backtest --exchange $(EXCHANGE) --symbol "$(SYMBOL)" --timeframe $(TIMEFRAME) --fee $(FEE) --out $(RUN_DIR)/$(STRATEGY)-$(shell date -u +%Y%m%dT%H%M%SZ)
+	uv run mycryptotrader --data-dir $(DATA_DIR) backtest --strategy $(STRATEGY) --exchange $(EXCHANGE) --symbol "$(SYMBOL)" --timeframe $(TIMEFRAME) --fee $(FEE) --out $(RUN_DIR)/$(STRATEGY)-$(shell date -u +%Y%m%dT%H%M%SZ)
 
 download: ## Freqtrade: завантажити свічки для бектесту
 	$(FREQTRADE_RUN) download-data --config $(FREQTRADE_CONFIG) --timeframes $(TIMEFRAME) --timerange $(TIMERANGE)
