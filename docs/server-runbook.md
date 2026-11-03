@@ -184,6 +184,40 @@ mv user_data/tradesv3.dryrun.sqlite user_data/tradesv3.dryrun.sqlite.bak
 make dryrun STRATEGY=RsiReversion
 ```
 
+### Публічний доступ через nginx + домен
+
+Спочатку A-запис домену → IP сервера. Якщо ввімкнений ufw:
+
+```bash
+sudo ufw allow 'Nginx Full'
+```
+
+```bash
+# HTTP reverse proxy; basic auth — бажано
+read -rs NGINX_AUTH_PASSWORD
+export NGINX_AUTH_PASSWORD
+make nginx DOMAIN=freq.example.com AUTH_USER=roma
+
+# HTTPS
+make nginx-tls DOMAIN=freq.example.com EMAIL=you@example.com
+```
+
+Далі UI доступний за `https://freq.example.com`. Для live-UI:
+
+```bash
+make nginx DOMAIN=freq.example.com NGINX_PORT=18081
+```
+
+Прибрати:
+
+```bash
+make nginx-remove DOMAIN=freq.example.com
+```
+
+Перед публічним доступом обов'язково зміни стандартний пароль dry-run
+(`dry-run-only-password`) або закрий UI basic auth. Для live — тільки пароль з
+`config/freqtrade/config.private.json`.
+
 ## 7. Live (тільки після 2–4 тижнів dry-run)
 
 Чекліст:

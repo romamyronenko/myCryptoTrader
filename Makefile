@@ -19,6 +19,11 @@ FREQTRADE_DRYRUN_PORT ?= 18080
 FREQTRADE_LIVE_PORT ?= 18081
 export FREQTRADE_DRYRUN_PORT
 export FREQTRADE_LIVE_PORT
+DOMAIN ?=
+EMAIL ?=
+NGINX_PORT ?= $(FREQTRADE_DRYRUN_PORT)
+NGINX_AUTH_USER ?=
+NGINX_AUTH_PASSWORD ?=
 FREQTRADE_CONFIG ?= /freqtrade/config/config.dryrun.json
 COMPOSE ?= docker compose
 FREQTRADE_RUN := $(COMPOSE) run --rm --no-deps trading
@@ -27,7 +32,7 @@ STRATEGY_PATH := /opt/mycryptotrader/src/mycryptotrader/strategies
 .PHONY: help install lock fmt format-check lint typecheck test test-cov ci \
 	data-demo data-download data-validate data-list data-sql backtest \
 	download backtest-ft dryrun up live stop restart ps logs shell \
-	build deploy clean clean-runs
+	build deploy clean clean-runs nginx nginx-tls nginx-remove
 
 help: ## Показати цю довідку
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage: make <target>\n\n"} /^[a-zA-Z0-9_-]+:.*##/ {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -117,6 +122,21 @@ deploy: ## Сервер: git pull + рестарт
 	git pull --ff-only
 	$(COMPOSE) pull
 	$(COMPOSE) up -d --remove-orphans trading
+
+nginx: ## Nginx reverse proxy: make nginx DOMAIN=freq.example.com [AUTH_USER=... AUTH_PASSWORD=...]
+	@test -n "$(DOMAIN)" || (echo "Usage: make nginx DOMAIN=freq.example.com [AUTH_USER=... AUTH_PASSWORD=...]"; exit 1)
+	sudo sh ops/nginx/install.sh "$(DOMAIN)" "$(NGINX_PORT)" "$(NGINX_AUTH_USER)" "$(NGINX_AUTH_PASSWORD)"
+
+nginx-tls: ## TLS via Let's Encrypt: make nginx-tls DOMAIN=freq.example.com EMAIL=you@example.com
+	@test -n "$(DOMAIN)" || (echo "Usage: make nginx-tls DOMAIN=freq.example.com EMAIL=you@example.com"; exit 1)
+	@test -n "$(EMAIL)" || (echo "EMAIL is required"; exit 1)
+	sudo apt-get update
+	sudo apt-get install -y certbot python3-certbot-nginx
+	sudo certbot --nginx -d "$(DOMAIN)" --non-interactive --agree-tos -m "$(EMAIL)" --redirect
+
+nginx-remove: ## Видалити nginx-сайт: make nginx-remove DOMAIN=freq.example.com
+	@test -n "$(DOMAIN)" || (echo "Usage: make nginx-remove DOMAIN=freq.example.com"; exit 1)
+	sudo sh ops/nginx/remove.sh "$(DOMAIN)"
 
 clean: ## Прибрати кеші
 	rm -rf .pytest_cache .ruff_cache .mypy_cache htmlcov .coverage

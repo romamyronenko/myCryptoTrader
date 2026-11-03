@@ -59,6 +59,8 @@ uv run mycryptotrader backtest
 | `make logs` | логи бота |
 | `make stop` | зупинити все |
 | `make deploy` | на сервері: `git pull` + restart |
+| `make nginx DOMAIN=...` | nginx reverse proxy для FreqUI |
+| `make nginx-tls DOMAIN=... EMAIL=...` | HTTPS-сертифікат Let's Encrypt |
 
 Приклади з іншими параметрами:
 
@@ -154,6 +156,39 @@ make logs
 
 `make live` запускає окремий контейнер на порту `127.0.0.1:18081`. **Не запускай dry-run і live
 одночасно** — це різні БД, але плутанина в стані неминуча.
+
+## FreqUI через nginx + домен
+
+Спочатку DNS: A-запис `freq.example.com` → IP сервера, і відкритий порт 80.
+
+```bash
+# HTTP reverse proxy (+ опційний basic auth)
+make nginx DOMAIN=freq.example.com AUTH_USER=roma AUTH_PASSWORD='strong-password'
+
+# HTTPS через Let's Encrypt
+make nginx-tls DOMAIN=freq.example.com EMAIL=you@example.com
+```
+
+`make nginx`:
+
+- пише `/etc/nginx/sites-available/mycryptotrader-<domain>.conf`;
+- робить symlink у `sites-enabled`;
+- перевіряє `nginx -t`, робить reload, а при помилці відкочує зміни.
+
+`AUTH_USER`/`AUTH_PASSWORD` додають HTTP Basic Auth — рекомендовано, якщо UI дивиться в
+інтернет. Пароль краще не світити в історії shell:
+
+```bash
+read -rs NGINX_AUTH_PASSWORD
+export NGINX_AUTH_PASSWORD
+make nginx DOMAIN=freq.example.com AUTH_USER=roma
+```
+
+Для live-UI: `make nginx DOMAIN=freq.example.com NGINX_PORT=18081`.
+Видалити сайт: `make nginx-remove DOMAIN=freq.example.com`.
+
+Перед публічним доступом зміни пароль FreqUI: стандартний `dry-run-only-password`
+не призначений для інтернету. Для live використовуй пароль з `config.private.json`.
 
 ## Правила безпеки
 
