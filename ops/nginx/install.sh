@@ -32,7 +32,7 @@ if [ ! -d "$SITES_AVAILABLE" ]; then
   echo "$SITES_AVAILABLE not found (Debian/Ubuntu nginx expected)" >&2
   exit 1
 fi
-mkdir -p "$SITES_ENABLED" /var/www/html
+mkdir -p "$SITES_ENABLED"
 
 AUTH_LINES=""
 if [ -n "$AUTH_USER" ] && [ -n "$AUTH_PASSWORD" ]; then
@@ -56,27 +56,22 @@ cat > "$CONF" <<EOF
 # Managed by myCryptoTrader. Regenerate with: make nginx DOMAIN=$DOMAIN
 server {
     listen 80;
-    listen [::]:80;
     server_name $DOMAIN;
-
-    # Let's Encrypt HTTP-01 challenge (must stay unauthenticated).
-    location /.well-known/acme-challenge/ {
-        root /var/www/html;
-    }
 
     location / {
         $AUTH_LINES
         proxy_pass http://127.0.0.1:$PORT;
+
         proxy_http_version 1.1;
+
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
+
+        # FreqUI live updates (WebSocket)
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection "upgrade";
-        proxy_read_timeout 300s;
-        proxy_send_timeout 300s;
-        proxy_buffering off;
     }
 }
 EOF
