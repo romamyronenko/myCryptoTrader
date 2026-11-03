@@ -118,7 +118,7 @@ make dryrun      STRATEGY=RsiReversion
 cp .env.example .env      # STRATEGY/TIMEFRAME; секретів тут немає
 make download             # свічки для Freqtrade-бектесту
 make backtest-ft          # бектест
-make dryrun               # dry-run + FreqUI на 127.0.0.1:8080
+make dryrun               # dry-run + FreqUI на 127.0.0.1:18080
 make logs
 ```
 
@@ -152,7 +152,7 @@ make logs
 4. є зовнішній heartbeat (healthchecks.io) і Telegram-алерти;
 5. бекап `user_data/*.sqlite` і конфігів.
 
-`make live` запускає окремий контейнер на порту `127.0.0.1:8081`. **Не запускай dry-run і live
+`make live` запускає окремий контейнер на порту `127.0.0.1:18081`. **Не запускай dry-run і live
 одночасно** — це різні БД, але плутанина в стані неминуча.
 
 ## Правила безпеки

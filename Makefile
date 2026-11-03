@@ -15,6 +15,10 @@ UNTIL ?= 2024-01-01
 FEE ?= 0.001
 DATA_DIR ?= data
 RUN_DIR ?= research/runs
+FREQTRADE_DRYRUN_PORT ?= 18080
+FREQTRADE_LIVE_PORT ?= 18081
+export FREQTRADE_DRYRUN_PORT
+export FREQTRADE_LIVE_PORT
 FREQTRADE_CONFIG ?= /freqtrade/config/config.dryrun.json
 COMPOSE ?= docker compose
 FREQTRADE_RUN := $(COMPOSE) run --rm --no-deps trading
@@ -82,7 +86,7 @@ backtest-ft: ## Freqtrade-бектест у Docker
 
 dryrun: ## Підняти dry-run бота
 	$(COMPOSE) up -d trading
-	@echo "Dry-run started. Logs: make logs | UI: http://127.0.0.1:8080"
+	@echo "Dry-run started. Logs: make logs | UI: http://127.0.0.1:$(FREQTRADE_DRYRUN_PORT)"
 
 up: dryrun ## Аліас для dryrun
 

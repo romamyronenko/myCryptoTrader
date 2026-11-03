@@ -36,7 +36,7 @@ services:
       - --strategy-path
       - /opt/mycryptotrader/src/mycryptotrader/strategies
     ports:
-      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:${FREQTRADE_DRYRUN_PORT:-18080}:8080"
 
   trading-live:
     <<: *common
@@ -53,4 +53,4 @@ services:
       - --strategy-path
       - /opt/mycryptotrader/src/mycryptotrader/strategies
     ports:
-      - "127.0.0.1:8081:8080"
+      - "127.0.0.1:${FREQTRADE_LIVE_PORT:-18081}:8080"

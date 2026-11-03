@@ -153,8 +153,8 @@ docker compose logs --tail=100 trading
 FreqUI не світимо в інтернет. Дивись через SSH-тунель зі своєї машини:
 
 ```bash
-ssh -L 8080:127.0.0.1:8080 user@server
-# потім відкрий http://127.0.0.1:8080
+ssh -L 18080:127.0.0.1:18080 user@server
+# потім відкрий http://127.0.0.1:18080
 # dry-run: freqtrader / dry-run-only-password (config.dryrun.json)
 # live: логін/пароль з config/freqtrade/config.private.json
 ```
@@ -221,6 +221,7 @@ make deploy
 | Симптом | Причина / рішення |
 |---|---|
 | `permission denied` на `user_data` | `sudo chown -R 1000:1000 user_data` |
+| `port is already allocated` | інший сервіс на цьому порту; зміни `FREQTRADE_DRYRUN_PORT`/`FREQTRADE_LIVE_PORT` у `.env` |
 | `No data found` у Freqtrade-бектесті | `make download` з тим самим `TIMERANGE`/`TIMEFRAME` |
 | `pair not found` | перевір `pair_whitelist` у `config/freqtrade/config.dryrun.json` |
 | контейнер постійно рестартиться | `make logs`; найчастіше — незаповнений `config.private.json` або поганий конфіг |
