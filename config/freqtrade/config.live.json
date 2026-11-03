@@ -36,8 +36,8 @@
   },
   "exchange": {
     "name": "binance",
-    "key": "${BINANCE_API_KEY}",
-    "secret": "${BINANCE_API_SECRET}",
+    "key": "",
+    "secret": "",
     "ccxt_config": {},
     "ccxt_async_config": {},
     "pair_whitelist": ["BTC/USDT", "ETH/USDT", "SOL/USDT"],
@@ -54,15 +54,15 @@
     "listen_port": 8080,
     "verbosity": "error",
     "enable_openapi": false,
-    "jwt_secret_key": "${FREQTRADE_JWT_SECRET}",
+    "jwt_secret_key": "change-me-in-config-private-0123456789abcdef",
     "CORS_origins": [],
-    "username": "${FREQTRADE_API_USERNAME}",
-    "password": "${FREQTRADE_API_PASSWORD}"
+    "username": "freqtrader",
+    "password": "change-me-in-config-private"
   },
   "telegram": {
     "enabled": false,
-    "token": "${TELEGRAM_TOKEN}",
-    "chat_id": "${TELEGRAM_CHAT_ID}"
+    "token": "",
+    "chat_id": ""
   },
   "internals": {
     "process_throttle_secs": 5

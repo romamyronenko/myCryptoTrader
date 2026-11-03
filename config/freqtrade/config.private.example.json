@@ -1,0 +1,16 @@
+{
+  "exchange": {
+    "key": "CHANGE_ME_BINANCE_API_KEY",
+    "secret": "CHANGE_ME_BINANCE_API_SECRET"
+  },
+  "api_server": {
+    "jwt_secret_key": "CHANGE_ME",
+    "username": "freqtrader",
+    "password": "CHANGE_ME"
+  },
+  "telegram": {
+    "enabled": false,
+    "token": "CHANGE_ME_TELEGRAM_BOT_TOKEN",
+    "chat_id": "CHANGE_ME_TELEGRAM_CHAT_ID"
+  }
+}

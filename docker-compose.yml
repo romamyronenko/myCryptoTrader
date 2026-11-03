@@ -5,13 +5,6 @@ x-common: &common
   restart: unless-stopped
   environment:
     PYTHONPATH: /opt/mycryptotrader/src
-    BINANCE_API_KEY: ${BINANCE_API_KEY:-}
-    BINANCE_API_SECRET: ${BINANCE_API_SECRET:-}
-    FREQTRADE_API_USERNAME: ${FREQTRADE_API_USERNAME:-freqtrader}
-    FREQTRADE_API_PASSWORD: ${FREQTRADE_API_PASSWORD:-change-me}
-    FREQTRADE_JWT_SECRET: ${FREQTRADE_JWT_SECRET:-change-me-to-a-long-random-string-32-chars-min}
-    TELEGRAM_TOKEN: ${TELEGRAM_TOKEN:-}
-    TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
   volumes:
     - ./config/freqtrade:/freqtrade/config:ro
     - ./src:/opt/mycryptotrader/src:ro
@@ -53,6 +46,8 @@ services:
       - trade
       - --config
       - /freqtrade/config/config.live.json
+      - --config
+      - /freqtrade/config/config.private.json
       - --strategy
       - ${STRATEGY:-TaBaseline}
       - --strategy-path

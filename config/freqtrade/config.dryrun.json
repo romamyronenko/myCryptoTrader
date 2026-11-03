@@ -55,10 +55,10 @@
     "listen_port": 8080,
     "verbosity": "error",
     "enable_openapi": false,
-    "jwt_secret_key": "${FREQTRADE_JWT_SECRET}",
+    "jwt_secret_key": "dry-run-only-jwt-secret-0123456789abcdef",
     "CORS_origins": [],
-    "username": "${FREQTRADE_API_USERNAME}",
-    "password": "${FREQTRADE_API_PASSWORD}"
+    "username": "freqtrader",
+    "password": "dry-run-only-password"
   },
   "telegram": {
     "enabled": false,

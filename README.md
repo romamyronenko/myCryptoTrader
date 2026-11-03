@@ -108,13 +108,14 @@ make dryrun      STRATEGY=RsiReversion
 Конфіги лежать у `config/freqtrade/`:
 
 - `config.dryrun.json` — безпечний режим без ключів;
-- `config.live.json` — реальні гроші, ключі з env (`${BINANCE_API_KEY}`).
+- `config.live.json` — реальні гроші, базовий конфіг без секретів;
+- `config.private.json` — ключі та паролі (git-ignored, створюється локально).
 
 Стратегії — у `src/mycryptotrader/strategies/` і монтуються в контейнер, тому
 контейнер не треба перебудовувати після зміни стратегії.
 
 ```bash
-cp .env.example .env      # заповни ключі лише для live
+cp .env.example .env      # STRATEGY/TIMEFRAME; секретів тут немає
 make download             # свічки для Freqtrade-бектесту
 make backtest-ft          # бектест
 make dryrun               # dry-run + FreqUI на 127.0.0.1:8080
@@ -130,8 +131,12 @@ sudo timedatectl set-timezone UTC
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 git clone <repo> myCryptoTrader && cd myCryptoTrader
-cp .env.example .env && chmod 600 .env
-# заповни .env (ключі з правом trade, БЕЗ withdraw, IP-whitelist)
+cp .env.example .env
+
+# лише для live:
+cp config/freqtrade/config.private.example.json config/freqtrade/config.private.json
+chmod 600 config/freqtrade/config.private.json
+# заповни ключі (trade-only, без withdraw, IP-whitelist)
 
 make download             # історія для бектесту
 make backtest-ft          # перевірка стратегії
@@ -152,7 +157,7 @@ make logs
 
 ## Правила безпеки
 
-- Ключі — тільки в `.env` (chmod 600), ніколи в git.
+- Ключі — тільки в `config/freqtrade/config.private.json` (chmod 600), ніколи в git.
 - Ніяких ключів із правом виведення коштів на сервері.
 - Live — тільки після dry-run і тільки малим капіталом.
 - Бектест без комісій і slippage — не результат.

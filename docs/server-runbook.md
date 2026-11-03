@@ -47,27 +47,29 @@ make --version
 
 ```bash
 cp .env.example .env
-chmod 600 .env
-nano .env
+nano .env     # STRATEGY, TIMEFRAME, EXCHANGE — секретів тут немає
 ```
 
-Для **dry-run** достатньо заповнити:
+Для **dry-run** більше нічого не потрібно: `config/freqtrade/config.dryrun.json` уже містить
+безпечні локальні значення, а API-ключі не використовуються.
 
-```dotenv
-FREQTRADE_API_USERNAME=freqtrader
-FREQTRADE_API_PASSWORD=<сильний пароль>
-FREQTRADE_JWT_SECRET=<випадковий рядок 32+ символи>
-STRATEGY=TaBaseline
-```
-
-`BINANCE_API_KEY/SECRET` залиш порожніми, поки не дійде до live. Для live — ключ
-**тільки з правом `trade`**, без `withdraw`, з IP-whitelist сервера.
-
-Згенерувати секрет:
+Для **live** створи окремий приватний конфіг (git-ignored, мержиться поверх базового):
 
 ```bash
-openssl rand -hex 32
+cp config/freqtrade/config.private.example.json config/freqtrade/config.private.json
+chmod 600 config/freqtrade/config.private.json
+nano config/freqtrade/config.private.json
 ```
+
+Заповни `exchange.key/secret` (право **тільки `trade`**, без `withdraw`, IP-whitelist) і
+`api_server`:
+
+```bash
+openssl rand -hex 32   # у jwt_secret_key
+```
+
+Freqtrade не підставляє `${VAR}` з `.env`, тому секрети живуть саме в `config.private.json`,
+а не в змінних оточення.
 
 ## 3. Перевірка коду перед запуском
 
@@ -153,7 +155,8 @@ FreqUI не світимо в інтернет. Дивись через SSH-ту
 ```bash
 ssh -L 8080:127.0.0.1:8080 user@server
 # потім відкрий http://127.0.0.1:8080
-# логін/пароль — з .env
+# dry-run: freqtrader / dry-run-only-password (config.dryrun.json)
+# live: логін/пароль з config/freqtrade/config.private.json
 ```
 
 Що перевіряти щодня:
@@ -189,7 +192,7 @@ make dryrun STRATEGY=RsiReversion
 - [ ] бектест і dry-run дають схожу картину;
 - [ ] API-ключ створений з правом `trade`, **без** `withdraw`;
 - [ ] IP-whitelist на біржі налаштований;
-- [ ] `.env` заповнений, `chmod 600`;
+- [ ] `config/freqtrade/config.private.json` заповнений, `chmod 600`;
 - [ ] є Telegram-алерти або зовнішній heartbeat;
 - [ ] є бекап `user_data/tradesv3.sqlite` і конфігів;
 - [ ] сума, яку не страшно втратити.
@@ -220,7 +223,7 @@ make deploy
 | `permission denied` на `user_data` | `sudo chown -R 1000:1000 user_data` |
 | `No data found` у Freqtrade-бектесті | `make download` з тим самим `TIMERANGE`/`TIMEFRAME` |
 | `pair not found` | перевір `pair_whitelist` у `config/freqtrade/config.dryrun.json` |
-| контейнер постійно рестартиться | `make logs`; найчастіше — незаповнений `.env` або поганий конфіг |
+| контейнер постійно рестартиться | `make logs`; найчастіше — незаповнений `config.private.json` або поганий конфіг |
 | `Invalid API key` при live | ключ без прав `trade`, невірний IP-whitelist, не той акаунт |
 | бектест раптом «ідеально» прибутковий | перевір діри в даних (`make data-validate`) і що комісія не 0 |
 | час на сервері плаває | `timedatectl`, `chronyc tracking` |

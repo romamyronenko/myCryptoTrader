@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+/config/freqtrade/config.private.json
 
 # Python
 __pycache__/

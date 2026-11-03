@@ -87,6 +87,7 @@ dryrun: ## Підняти dry-run бота
 up: dryrun ## Аліас для dryrun
 
 live: ## LIVE-торгівля (питає підтвердження)
+	@test -f config/freqtrade/config.private.json || (echo "Missing config/freqtrade/config.private.json"; echo "Copy config.private.example.json, fill it and run: chmod 600 config/freqtrade/config.private.json"; exit 1)
 	@read -r -p "Start LIVE trading with real funds? [y/N] " ans; [ "$$ans" = "y" ] || (echo "aborted"; exit 1)
 	$(COMPOSE) --profile live up -d trading-live
 
