@@ -193,10 +193,8 @@ sudo ufw allow 'Nginx Full'
 ```
 
 ```bash
-# HTTP reverse proxy; basic auth — бажано
-read -rs NGINX_AUTH_PASSWORD
-export NGINX_AUTH_PASSWORD
-make nginx DOMAIN=freq.example.com AUTH_USER=roma
+# HTTP reverse proxy
+make nginx DOMAIN=freq.example.com
 
 # HTTPS
 make nginx-tls DOMAIN=freq.example.com EMAIL=you@example.com
@@ -215,7 +213,7 @@ make nginx-remove DOMAIN=freq.example.com
 ```
 
 Перед публічним доступом обов'язково зміни стандартний пароль dry-run
-(`dry-run-only-password`) або закрий UI basic auth. Для live — тільки пароль з
+(`dry-run-only-password`). Для live — тільки пароль з
 `config/freqtrade/config.private.json`.
 
 #### Локальне ім'я `mytrade.local`
@@ -236,7 +234,7 @@ Add-Content C:\Windows\System32\drivers\etc\hosts "192.168.1.50 mytrade.local"
 `192.168.1.50` — IP сервера. Далі:
 
 ```bash
-make nginx DOMAIN=mytrade.local AUTH_USER=roma
+make nginx DOMAIN=mytrade.local
 # http://mytrade.local
 ```
 

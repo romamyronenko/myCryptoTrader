@@ -162,8 +162,8 @@ make logs
 Спочатку DNS: A-запис `freq.example.com` → IP сервера, і відкритий порт 80.
 
 ```bash
-# HTTP reverse proxy (+ опційний basic auth)
-make nginx DOMAIN=freq.example.com AUTH_USER=roma AUTH_PASSWORD='strong-password'
+# HTTP reverse proxy
+make nginx DOMAIN=freq.example.com
 
 # HTTPS через Let's Encrypt
 make nginx-tls DOMAIN=freq.example.com EMAIL=you@example.com
@@ -174,15 +174,6 @@ make nginx-tls DOMAIN=freq.example.com EMAIL=you@example.com
 - пише `/etc/nginx/sites-available/mycryptotrader-<domain>.conf`;
 - робить symlink у `sites-enabled`;
 - перевіряє `nginx -t`, робить reload, а при помилці відкочує зміни.
-
-`AUTH_USER`/`AUTH_PASSWORD` додають HTTP Basic Auth — рекомендовано, якщо UI дивиться в
-інтернет. Пароль краще не світити в історії shell:
-
-```bash
-read -rs NGINX_AUTH_PASSWORD
-export NGINX_AUTH_PASSWORD
-make nginx DOMAIN=freq.example.com AUTH_USER=roma
-```
 
 Для live-UI: `make nginx DOMAIN=freq.example.com NGINX_PORT=18081`.
 Видалити сайт: `make nginx-remove DOMAIN=freq.example.com`.
@@ -213,7 +204,7 @@ Add-Content C:\Windows\System32\drivers\etc\hosts "192.168.1.50 mytrade.local"
 Далі:
 
 ```bash
-make nginx DOMAIN=mytrade.local AUTH_USER=roma
+make nginx DOMAIN=mytrade.local
 ```
 
 і відкривай `http://mytrade.local`.
