@@ -190,6 +190,41 @@ make nginx DOMAIN=freq.example.com AUTH_USER=roma
 Перед публічним доступом зміни пароль FreqUI: стандартний `dry-run-only-password`
 не призначений для інтернету. Для live використовуй пароль з `config.private.json`.
 
+### Локальне ім'я (mytrade.local)
+
+`.local` зарезервований під mDNS, тому Let's Encrypt для нього не працює
+(`make nginx-tls` це заблокує). Для доступу по імені додай запис у `hosts` **на своїй
+машині** (не на сервері):
+
+Linux/macOS:
+
+```bash
+sudo sh -c 'echo "192.168.1.50 mytrade.local" >> /etc/hosts'
+```
+
+Windows (PowerShell від адміністратора):
+
+```powershell
+Add-Content C:\Windows\System32\drivers\etc\hosts "192.168.1.50 mytrade.local"
+```
+
+де `192.168.1.50` — IP сервера в локальній мережі (або публічна IP, якщо сервер віддалений).
+
+Далі:
+
+```bash
+make nginx DOMAIN=mytrade.local AUTH_USER=roma
+```
+
+і відкривай `http://mytrade.local`.
+
+Якщо `.local` не резолвиться або конфліктує з mDNS/Avahi — використай
+`mytrade.home.arpa` або `mytrade.internal`. Для HTTPS на локальному імені потрібен
+self-signed сертифікат або `mkcert`; Let's Encrypt тут не допоможе.
+
+HTTP передає пароль відкритим текстом. У локальній мережі це прийнятно, але для
+віддаленого сервера краще SSH-тунель або справжній домен з HTTPS.
+
 ## Правила безпеки
 
 - Ключі — тільки в `config/freqtrade/config.private.json` (chmod 600), ніколи в git.

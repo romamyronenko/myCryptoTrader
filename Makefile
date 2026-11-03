@@ -130,6 +130,11 @@ nginx: ## Nginx reverse proxy: make nginx DOMAIN=freq.example.com [AUTH_USER=...
 nginx-tls: ## TLS via Let's Encrypt: make nginx-tls DOMAIN=freq.example.com EMAIL=you@example.com
 	@test -n "$(DOMAIN)" || (echo "Usage: make nginx-tls DOMAIN=freq.example.com EMAIL=you@example.com"; exit 1)
 	@test -n "$(EMAIL)" || (echo "EMAIL is required"; exit 1)
+	@case "$(DOMAIN)" in *.local|*.internal|*.lan|*.home.arpa) \
+		echo "ERROR: Let's Encrypt cannot issue certificates for $(DOMAIN)."; \
+		echo "Use a public domain, or a self-signed/mkcert certificate for local access."; \
+		exit 1;; \
+	esac
 	sudo apt-get update
 	sudo apt-get install -y certbot python3-certbot-nginx
 	sudo certbot --nginx -d "$(DOMAIN)" --non-interactive --agree-tos -m "$(EMAIL)" --redirect

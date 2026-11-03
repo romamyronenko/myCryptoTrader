@@ -218,6 +218,31 @@ make nginx-remove DOMAIN=freq.example.com
 (`dry-run-only-password`) або закрий UI basic auth. Для live — тільки пароль з
 `config/freqtrade/config.private.json`.
 
+#### Локальне ім'я `mytrade.local`
+
+`.local` — mDNS-домен, Let's Encrypt для нього сертифікат не видає (`make nginx-tls`
+це заблокує). Додай запис у `hosts` на своїй машині:
+
+```bash
+# Linux/macOS
+sudo sh -c 'echo "192.168.1.50 mytrade.local" >> /etc/hosts'
+```
+
+```powershell
+# Windows, PowerShell від адміністратора
+Add-Content C:\Windows\System32\drivers\etc\hosts "192.168.1.50 mytrade.local"
+```
+
+`192.168.1.50` — IP сервера. Далі:
+
+```bash
+make nginx DOMAIN=mytrade.local AUTH_USER=roma
+# http://mytrade.local
+```
+
+Для HTTPS на локальному імені — self-signed або `mkcert`, не certbot. HTTP передає
+пароль відкритим текстом, тому для віддаленого сервера краще SSH-тунель.
+
 ## 7. Live (тільки після 2–4 тижнів dry-run)
 
 Чекліст:
