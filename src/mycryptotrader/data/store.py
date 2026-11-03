@@ -174,7 +174,7 @@ def list_datasets(root: Path | str) -> list[DatasetInfo]:
                 exchange=exchange,
                 symbol=symbol,
                 timeframe=timeframe,
-                rows=int(len(stamps)),
+                rows=len(stamps),
                 start=pd.to_datetime(int(stamps.min()), unit="ms", utc=True),
                 end=pd.to_datetime(int(stamps.max()), unit="ms", utc=True),
                 path=timeframe_dir,

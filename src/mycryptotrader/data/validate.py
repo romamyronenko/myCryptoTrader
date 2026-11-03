@@ -83,7 +83,7 @@ def validate_ohlcv(df: pd.DataFrame, timeframe: str) -> ValidationReport:
     zero_volume = int((df["volume"] <= 0).sum())
 
     return ValidationReport(
-        rows=int(len(df)),
+        rows=len(df),
         duplicates=duplicates,
         missing_bars=missing_bars,
         nulls=nulls,
