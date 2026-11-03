@@ -22,8 +22,10 @@ export FREQTRADE_LIVE_PORT
 DOMAIN ?=
 EMAIL ?=
 NGINX_PORT ?= $(FREQTRADE_DRYRUN_PORT)
-NGINX_AUTH_USER ?=
-NGINX_AUTH_PASSWORD ?=
+AUTH_USER ?=
+AUTH_PASSWORD ?=
+NGINX_AUTH_USER ?= $(AUTH_USER)
+NGINX_AUTH_PASSWORD ?= $(AUTH_PASSWORD)
 FREQTRADE_CONFIG ?= /freqtrade/config/config.dryrun.json
 COMPOSE ?= docker compose
 FREQTRADE_RUN := $(COMPOSE) run --rm --no-deps trading
@@ -125,7 +127,7 @@ deploy: ## Сервер: git pull + рестарт
 
 nginx: ## Nginx reverse proxy: make nginx DOMAIN=freq.example.com [AUTH_USER=... AUTH_PASSWORD=...]
 	@test -n "$(DOMAIN)" || (echo "Usage: make nginx DOMAIN=freq.example.com [AUTH_USER=... AUTH_PASSWORD=...]"; exit 1)
-	sudo sh ops/nginx/install.sh "$(DOMAIN)" "$(NGINX_PORT)" "$(NGINX_AUTH_USER)" "$(NGINX_AUTH_PASSWORD)"
+	@sudo sh ops/nginx/install.sh "$(DOMAIN)" "$(NGINX_PORT)" "$(NGINX_AUTH_USER)" "$(NGINX_AUTH_PASSWORD)"
 
 nginx-tls: ## TLS via Let's Encrypt: make nginx-tls DOMAIN=freq.example.com EMAIL=you@example.com
 	@test -n "$(DOMAIN)" || (echo "Usage: make nginx-tls DOMAIN=freq.example.com EMAIL=you@example.com"; exit 1)

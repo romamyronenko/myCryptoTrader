@@ -91,9 +91,20 @@ fi
 
 systemctl reload nginx
 
-cat <<EOF
+case "$DOMAIN" in
+  *.local|*.internal|*.lan|*.home.arpa)
+    cat <<EOF
+Enabled: http://$DOMAIN -> 127.0.0.1:$PORT
+Local domain detected: add "<server-ip> $DOMAIN" to the hosts file on each client.
+HTTPS: Let's Encrypt cannot issue for $DOMAIN; use a real domain or mkcert/self-signed.
+EOF
+    ;;
+  *)
+    cat <<EOF
 Enabled: http://$DOMAIN -> 127.0.0.1:$PORT
 Next:
   1) point DNS A/AAAA record for $DOMAIN to this server
   2) make nginx-tls DOMAIN=$DOMAIN EMAIL=you@example.com
 EOF
+    ;;
+esac
